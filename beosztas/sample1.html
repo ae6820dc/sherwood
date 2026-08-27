@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Havi beosztás - Szent Kristóf Szakrendelő</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            padding: 20px 10px;
+        }
+        .container {
+            max-width: 100%;
+            width: 100%;
+            background: white;
+            padding: 15px 12px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .ceg-header {
+            text-align: center;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #1a3c5e;
+            padding-bottom: 10px;
+        }
+        .ceg-header .cegnev {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a3c5e;
+            letter-spacing: 2px;
+        }
+        .ceg-header .cegnev span { font-weight: 300; color: #4a7a9e; }
+        .ceg-header .cegaddress { font-size: 14px; color: #555; margin-top: 2px; }
+        .ceg-header .cim {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a3c5e;
+            margin-top: 4px;
+        }
+        .ceg-header .idoszak { font-size: 15px; color: #555; margin-top: 4px; }
+        
+        .ceg-header .idoszak input {
+            border: none;
+            border-bottom: 1.5px dashed #7a9bcb;
+            background: transparent;
+            padding: 2px 8px;
+            font-size: 15px;
+            min-width: 150px;
+            text-align: center;
+            cursor: pointer;
+            pointer-events: auto;
+            opacity: 1;
+            color: #1a3c5e;
+            font-weight: 600;
+        }
+        .ceg-header .idoszak input:focus {
+            outline: none;
+            border-bottom: 2px solid #1a3c5e;
+        }
+
+        .table-wrap {
+            margin-top: 6px;
+            border-radius: 8px;
+            border: 1px solid #d0dbe8;
+            overflow-x: auto;
+            overflow-y: visible;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            table-layout: fixed;
+            min-width: 800px;
+        }
+        
+        th, td {
+            border: 1px solid #d0dbe8;
+            padding: 2px 3px;
+            text-align: center;
+            vertical-align: middle;
+            height: 57px;
+            overflow: hidden;
+        }
+        
+        th:first-child {
+            width: 150px;
+            min-width: 150px;
+            max-width: 150px;
+            position: sticky;
+            left: 0;
+            z-index: 10;
+            background: #1a3c5e !important;
+            cursor: default;
+            font-size: 16px;
+            padding: 4px 10px;
+            white-space: nowrap;
+            border-right: 2px solid #1a3c5e;
+            color: white !important;
+        }
+        td:first-child {
+            width: 150px;
+            min-width: 150px;
+            max-width: 150px;
+            position: sticky;
+            left: 0;
+            z-index: 5;
+            background: #f8faff !important;
+            font-weight: 700;
+            color: #1a3c5e;
+            text-align: left;
+            padding: 2px 10px;
+            border-right: 2px solid #d0dbe8;
+            font-size: 15px;
+            overflow: visible;
+        }
+        
+        th:not(:first-child) {
+            width: 32px;
+            min-width: 32px;
+            max-width: 32px;
+            color: white;
+            font-weight: 700;
+            font-size: 12px;
+            padding: 2px 1px;
+        }
+        td:not(:first-child) {
+            width: 32px;
+            min-width: 32px;
+            max-width: 32px;
+            padding: 2px 1px;
+        }
+
+        th.ossz-fejlec {
+            width: 45px;
+            min-width: 45px;
+            max-width: 45px;
+            background: #1a3c5e;
+            color: #ffd700;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: default;
+            padding: 2px 3px;
+            border-left: 2px solid #ffd700;
+        }
+        td.ossz-cell {
+            width: 45px;
+            min-width: 45px;
+            max-width: 45px;
+            font-weight: 700;
+            font-size: 16px;
+            color: #1a3c5e;
+            background: #eef3fa !important;
+            border-left: 2px solid #1a3c5e;
+            padding: 2px 3px;
+        }
+
+        td input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            padding: 2px 1px;
+            text-align: center;
+            font-size: 17px;
+            font-family: inherit;
+            border-radius: 0px;
+            min-height: 40px;
+            vertical-align: middle;
+            pointer-events: none;
+            opacity: 0.7;
+            color: #000;
+            font-weight: 700;
+            outline: none;
+            box-shadow: none;
+            transition: background 0.15s;
+        }
+        td input.engedelyezett {
+            pointer-events: auto;
+            opacity: 1;
+        }
+        td input:focus {
+            background: #e8f0fe;
+            font-size: 19px;
+            position: relative;
+            z-index: 10;
+            outline: none;
+            box-shadow: none;
+            border: 2px solid #1a3c5e;
+        }
+        td input::placeholder { 
+            color: #ccc; 
+            font-style: italic; 
+            font-size: 10px;
+            font-weight: 400;
+        }
+
+        .nev-cell {
+            display: flex;
+            align-items: center;
+            padding: 0;
+            width: 100%;
+            height: 52px;
+            gap: 4px;
+        }
+        .nev-sorszam {
+            font-size: 13px;
+            color: #1a3c5e;
+            font-weight: 700;
+            min-width: 22px;
+            text-align: right;
+            flex-shrink: 0;
+            user-select: none;
+        }
+        .nev-input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            padding: 2px 4px;
+            font-size: 15px;
+            font-weight: 700;
+            font-family: inherit;
+            color: #000;
+            text-align: left;
+            min-height: 36px;
+            line-height: 1.3;
+            vertical-align: middle;
+            flex: 1;
+            pointer-events: none;
+            opacity: 0.7;
+            outline: none;
+            box-shadow: none;
+            transition: background 0.15s;
+        }
+        .nev-input.engedelyezett {
+            pointer-events: auto;
+            opacity: 1;
+        }
+        .nev-input:focus {
+            background: #e8f0fe;
+            font-size: 17px;
+            outline: none;
+            box-shadow: none;
+            border: 2px solid #1a3c5e;
+        }
+        .nev-input::placeholder { 
+            color: #bbb; 
+            font-style: italic; 
+            font-weight: 400; 
+            font-size: 11px;
+        }
+
+        .nap-zold { background: #b7e4b7 !important; }
+        .nap-piros { background: #f7b0b0 !important; }
+        .nap-sarga { background: #f7e68a !important; }
+        .nap-feher { background: transparent !important; }
+        .nap-hetvege { background: #f5f0eb !important; }
+
+        .fejlec-zold { background: #2a7a3a !important; }
+        .fejlec-piros { background: #8a2a2a !important; }
+        .fejlec-sarga { background: #8a7a2a !important; }
+        .fejlec-alap { background: #1a3c5e !important; }
+        .fejlec-hetvege { background: #2a4a6a !important; }
+
+        .osszesito-sor td {
+            background: #f0f4f8 !important;
+            font-weight: 700;
+            color: #1a3c5e;
+        }
+        .osszesito-sor td:first-child {
+            background: #e8edf2 !important;
+            color: #1a3c5e;
+            font-weight: 700;
+        }
+        .osszesito-sor td.ossz-cell {
+            background: #dce4ec !important;
+            color: #1a3c5e;
+            font-weight: 700;
+            font-size: 18px;
+        }
+        .osszesito-sor td input {
+            background: transparent !important;
+            pointer-events: none !important;
+            opacity: 1 !important;
+            font-weight: 700;
+            color: #1a3c5e;
+            font-size: 16px;
+        }
+
+        .felirat { 
+            font-size: 7px; 
+            color: #ccc; 
+            display: block; 
+            font-weight: 400; 
+            margin-top: 1px; 
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0 8px;
+        }
+        .actions button {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            background: #1a3c5e;
+            color: white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+        .actions button:hover { transform: translateY(-2px); box-shadow: 0 5px 14px rgba(26,60,94,0.3); }
+        .actions button.edit { background: #8d6c3f; }
+        .actions button.edit:hover { background: #6e522f; }
+        .actions button.save-close { background: #c0392b; }
+        .actions button.save-close:hover { background: #962d22; }
+        .actions button.reset { background: #7f8c8d; }
+        .actions button.reset:hover { background: #616a6b; }
+        .actions button.export-btn { background: #27ae60; }
+        .actions button.export-btn:hover { background: #1e8449; }
+        .actions button.import-btn { background: #2980b9; }
+        .actions button.import-btn:hover { background: #1a5276; }
+
+        .footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #777;
+            margin-top: 14px;
+            border-top: 1px solid #dde3ed;
+            padding-top: 12px;
+        }
+
+        .password-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 9999;
+            justify-content: center; align-items: center;
+        }
+        .password-overlay.active { display: flex; }
+        .password-modal {
+            background: white; padding: 30px 35px; border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3); text-align: center; max-width: 380px; width: 90%;
+        }
+        .password-modal h2 { font-size: 22px; color: #1a3c5e; margin-bottom: 6px; }
+        .password-modal p { color: #666; font-size: 15px; margin-bottom: 16px; }
+        .password-modal input {
+            width: 100%; padding: 12px 14px; font-size: 20px; text-align: center;
+            border: 2px solid #d0dbe8; border-radius: 6px; outline: none; transition: 0.2s; letter-spacing: 4px;
+        }
+        .password-modal input:focus { border-color: #1a3c5e; }
+        .password-modal .modal-buttons { display: flex; gap: 10px; margin-top: 14px; justify-content: center; }
+        .password-modal .modal-buttons button {
+            padding: 10px 22px; border: none; border-radius: 6px; font-size: 15px; font-weight: 600; cursor: pointer; transition: 0.2s;
+        }
+        .password-modal .modal-buttons .confirm { background: #8d6c3f; color: white; }
+        .password-modal .modal-buttons .confirm:hover { background: #6e522f; }
+        .password-modal .modal-buttons .cancel { background: #ccc; color: #333; }
+        .password-modal .modal-buttons .cancel:hover { background: #bbb; }
+        .password-modal .error-msg { color: #d32f2f; font-size: 14px; margin-top: 8px; display: none; }
+        .password-modal .error-msg.show { display: block; }
+
+        #fileInput { display: none; }
+
+        @media print {
+            body { background: white; padding: 0; margin: 0; }
+            .container { box-shadow: none; padding: 8px 10px; border-radius: 0; max-width: 100%; }
+            .actions, .footer-note { display: none !important; }
+            .password-overlay { display: none !important; }
+            
+            .table-wrap { 
+                overflow-x: visible !important; 
+                border: 1px solid #000 !important;
+            }
+            
+            table {
+                border-collapse: collapse !important;
+                border: 1px solid #000 !important;
+                font-size: 11px !important;
+                min-width: auto !important;
+                table-layout: fixed !important;
+                width: 100% !important;
+            }
+
+            th, td {
+                border: 1px solid #000 !important;
+                padding: 2px 4px !important;
+                height: 44px !important;
+                overflow: visible !important;
+            }
+            
+            th:first-child, td:first-child {
+                width: 150px !important;
+                min-width: 150px !important;
+                max-width: 150px !important;
+                position: static !important;
+                border-right: 2px solid #000 !important;
+                background: #f8faff !important;
+            }
+            th:first-child { 
+                background: #1a3c5e !important; 
+                color: white !important;
+            }
+            
+            th:not(:first-child), td:not(:first-child) {
+                width: 32px !important;
+                min-width: 32px !important;
+                max-width: 32px !important;
+            }
+            
+            th.ossz-fejlec, td.ossz-cell {
+                width: 45px !important;
+                min-width: 45px !important;
+                max-width: 45px !important;
+            }
+
+            td input, .nev-input {
+                border: none !important;
+                background: transparent !important;
+                outline: none !important;
+                color: #000 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                pointer-events: none !important;
+                opacity: 1 !important;
+                font-size: 14px !important;
+                min-height: 28px !important;
+                box-shadow: none !important;
+            }
+            .nev-input::placeholder, td input::placeholder {
+                color: transparent !important;
+            }
+            
+            .nev-sorszam {
+                font-size: 11px !important;
+                color: #000 !important;
+                font-weight: 700 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .nev-input {
+                font-size: 14px !important;
+                font-weight: 600 !important;
+                color: #000 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            .nap-zold { background: #a0d0a0 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .nap-piros { background: #e8a0a0 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .nap-sarga { background: #e8d07a !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .nap-feher { background: transparent !important; }
+            .nap-hetvege { background: #f5f0eb !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            
+            td.ossz-cell {
+                background: #eef3fa !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            .osszesito-sor td {
+                background: #f0f4f8 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .osszesito-sor td:first-child {
+                background: #e8edf2 !important;
+            }
+            .osszesito-sor td.ossz-cell {
+                background: #dce4ec !important;
+            }
+            
+            .ceg-header { border-bottom-color: #1a3c5e !important; margin-bottom: 8px !important; padding-bottom: 8px !important; }
+            .ceg-header .cegnev { font-size: 20px !important; }
+            .ceg-header .cim { font-size: 16px !important; margin-top: 4px !important; }
+            .ceg-header .idoszak { font-size: 12px !important; }
+            .ceg-header .idoszak input { border-bottom: 1px solid #999 !important; font-size: 12px !important; min-width: 100px !important; color: #000 !important; pointer-events: none !important; opacity: 1 !important; }
+            
+            .btn-delete, .btn-insert-row { display: none !important; }
+        }
+
+        @media (max-width: 700px) {
+            .container { padding: 8px 4px; }
+            .ceg-header .cegnev { font-size: 18px; }
+            table { font-size: 11px; min-width: 600px; }
+            th:first-child, td:first-child { width: 110px; min-width: 110px; max-width: 110px; font-size: 13px; padding: 2px 6px; height: 48px; }
+            th:not(:first-child), td:not(:first-child) { width: 26px; min-width: 26px; max-width: 26px; height: 48px; padding: 2px 1px; }
+            th.ossz-fejlec, td.ossz-cell { width: 38px; min-width: 38px; max-width: 38px; }
+            td input { font-size: 14px; min-height: 32px; padding: 2px 1px; }
+            .nev-input { font-size: 13px; min-height: 30px; font-weight: 600; padding: 2px 4px; }
+            .nev-cell { min-height: 42px; height: 42px; gap: 3px; }
+            .nev-sorszam { font-size: 11px; min-width: 18px; font-weight: 700; }
+            th:not(:first-child) { font-size: 10px; padding: 2px 1px; height: 48px; }
+            th:first-child { font-size: 14px; padding: 2px 6px; }
+            .felirat { font-size: 6px; }
+            
+            td input:focus {
+                border: 2px solid #1a3c5e;
+            }
+            .nev-input:focus {
+                border: 2px solid #1a3c5e;
+            }
+            
+            @media print {
+                th:first-child, td:first-child {
+                    width: 110px !important;
+                    min-width: 110px !important;
+                    max-width: 110px !important;
+                }
+                th:not(:first-child), td:not(:first-child) {
+                    width: 26px !important;
+                    min-width: 26px !important;
+                    max-width: 26px !important;
+                }
+                th.ossz-fejlec, td.ossz-cell {
+                    width: 38px !important;
+                    min-width: 38px !important;
+                    max-width: 38px !important;
+                }
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="beosztasIv">
+    <div class="ceg-header">
+        <div class="cegnev">SZENT KRISTÓF <span>SZAKRENDELŐ</span></div>
+        <div class="cegaddress">BUDAPEST • ÚJBUDA</div>
+        <div class="cim">📋 Havi beosztás</div>
+        <div class="idoszak">
+            Hónap: <input type="month" id="honapValaszto" value="2026-08">
+        </div>
+    </div>
+
+    <div class="table-wrap">
+        <table id="beosztasTabla">
+            <thead>
+                <tr id="fejlecSor">
+                    <th>Név / Dátum</th>
+                </tr>
+            </thead>
+            <tbody id="tablaTest"></tbody>
+        </table>
+    </div>
+
+    <div class="actions">
+        <button id="editToggleBtn" class="edit" onclick="szerkesztesGombKattintas()">✏️ Szerkesztés</button>
+        <button class="reset" onclick="resetTabla()">🔄 Műszakok törlése</button>
+        <button class="export-btn" onclick="exportHonap()">📤 Export</button>
+        <button class="import-btn" onclick="importGombKattintas()">📥 Import</button>
+        <input type="file" id="fileInput" accept=".json" onchange="importFajlKivalasztva(event)">
+    </div>
+
+    <div class="footer-note">⚡ Szerkesztéshez kattints a gombra · Kattints a nap számára az oszlop színének váltásához</div>
+</div>
+
+<!-- JELSZÓ MODAL - ÁLTALÁNOS -->
+<div class="password-overlay" id="passwordOverlay">
+    <div class="password-modal">
+        <h2>🔒 Jelszó szükséges</h2>
+        <p id="jelszoUzenet">Add meg a jelszót a művelet folytatásához</p>
+        <input type="password" id="jelszoInput" placeholder="●●●●" maxlength="4" autocomplete="off">
+        <div class="error-msg" id="errorMsg">❌ Hibás jelszó! Próbáld újra.</div>
+        <div class="modal-buttons">
+            <button class="cancel" onclick="jelszoModalBezar()">Mégse</button>
+            <button class="confirm" onclick="jelszoEllenorzes()">Jóváhagyás</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        const STORAGE_PREFIX = 'havi_beosztas_';
+        const JELSZO = '1111';
+        const SOROK_SZAMA = 13;
+        const DOLGOZOK_SZAMA = 12;
+        const SZIN_CKLUS = ['white', 'green', 'red', 'yellow'];
+
+        let aktualisEv = 2026;
+        let aktualisHo = 7;
+        let sorok = [];
+        let oszlopSzinek = {};
+        let szerkesztesEngedelyezve = false;
+        let varakozoMuvelet = null;
+        let importFajlData = null;
+
+        function getHonapKulcs(ev, ho) {
+            const hoStr = String(ho + 1).padStart(2, '0');
+            return ev + '-' + hoStr;
+        }
+
+        function getStorageKey(ev, ho) {
+            return STORAGE_PREFIX + getHonapKulcs(ev, ho);
+        }
+
+        function getNapokSzama(ev, ho) { return new Date(ev, ho + 1, 0).getDate(); }
+        function getHetNapja(ev, ho, nap) { return new Date(ev, ho, nap).getDay(); }
+        function kovetkezoSzin(jelenlegi) {
+            const index = SZIN_CKLUS.indexOf(jelenlegi);
+            if (index === -1 || index === SZIN_CKLUS.length - 1) return SZIN_CKLUS[0];
+            return SZIN_CKLUS[index + 1];
+        }
+
+        function letrehozSorokat() {
+            const napokSzama = getNapokSzama(aktualisEv, aktualisHo);
+            const ujSorok = [];
+            for (let i = 0; i < DOLGOZOK_SZAMA; i++) {
+                const napok = {};
+                for (let d = 1; d <= napokSzama; d++) napok[d] = '';
+                ujSorok.push({ nev: '', napok: napok, osszesito: false });
+            }
+            const osszesitoNapok = {};
+            for (let d = 1; d <= napokSzama; d++) osszesitoNapok[d] = '';
+            ujSorok.push({ nev: 'ÖSSZESÍTŐ', napok: osszesitoNapok, osszesito: true });
+            return ujSorok;
+        }
+
+        function initOszlopSzinek() {
+            const napokSzama = getNapokSzama(aktualisEv, aktualisHo);
+            const ujSzinek = {};
+            for (let d = 1; d <= napokSzama; d++) {
+                ujSzinek[d] = 'white';
+            }
+            return ujSzinek;
+        }
+
+        function mentes() {
+            try {
+                const key = getStorageKey(aktualisEv, aktualisHo);
+                const data = { 
+                    sorok: sorok, 
+                    oszlopSzinek: oszlopSzinek,
+                    ev: aktualisEv,
+                    ho: aktualisHo
+                };
+                localStorage.setItem(key, JSON.stringify(data));
+            } catch(e) {}
+        }
+
+        function betoltes(ev, ho) {
+            try {
+                const key = getStorageKey(ev, ho);
+                const raw = localStorage.getItem(key);
+                if (raw) {
+                    const data = JSON.parse(raw);
+                    if (data.sorok && Array.isArray(data.sorok)) {
+                        sorok = data.sorok;
+                        if (data.oszlopSzinek) oszlopSzinek = data.oszlopSzinek;
+                        if (data.ev !== undefined) aktualisEv = data.ev;
+                        if (data.ho !== undefined) aktualisHo = data.ho;
+                        return true;
+                    }
+                }
+            } catch(e) {}
+            return false;
+        }
+
+        function osszegzesSzamolas(sor, egész = false) {
+            let osszeg = 0;
+            if (!sor.napok) return 0;
+            for (let d in sor.napok) {
+                const ertek = sor.napok[d];
+                if (ertek) {
+                    const szam = parseFloat(ertek.replace(',', '.'));
+                    if (!isNaN(szam)) osszeg += szam;
+                }
+            }
+            if (egész) {
+                return Math.floor(osszeg);
+            }
+            return osszeg;
+        }
+
+        function getSzinClass(szin) {
+            const map = {
+                'white': 'nap-feher',
+                'green': 'nap-zold',
+                'red': 'nap-piros',
+                'yellow': 'nap-sarga'
+            };
+            return map[szin] || 'nap-feher';
+        }
+
+        function getFejlecClass(szin, hetvege) {
+            if (szin !== 'white') {
+                const map = {
+                    'green': 'fejlec-zold',
+                    'red': 'fejlec-piros',
+                    'yellow': 'fejlec-sarga'
+                };
+                return map[szin] || 'fejlec-alap';
+            }
+            return hetvege ? 'fejlec-hetvege' : 'fejlec-alap';
+        }
+
+        function frissitOsszesitoSort() {
+            const napokSzama = getNapokSzama(aktualisEv, aktualisHo);
+            const osszesitoSor = sorok[DOLGOZOK_SZAMA];
+            if (!osszesitoSor || !osszesitoSor.osszesito) return;
+            
+            for (let d = 1; d <= napokSzama; d++) {
+                let napOsszeg = 0;
+                for (let i = 0; i < DOLGOZOK_SZAMA; i++) {
+                    const ertek = sorok[i].napok[d];
+                    if (ertek) {
+                        const szam = parseFloat(ertek.replace(',', '.'));
+                        if (!isNaN(szam)) napOsszeg += szam;
+                    }
+                }
+                osszesitoSor.napok[d] = napOsszeg > 0 ? Math.floor(napOsszeg).toString() : '';
+            }
+            
+            const osszesSorElem = document.querySelector('#tablaTest tr.osszesito-sor');
+            if (osszesSorElem) {
+                const cellak = osszesSorElem.querySelectorAll('td:not(:first-child):not(.ossz-cell)');
+                cellak.forEach((td, index) => {
+                    const nap = index + 1;
+                    const inp = td.querySelector('input');
+                    if (inp) {
+                        inp.value = osszesitoSor.napok[nap] || '';
+                    }
+                });
+                const osszCell = osszesSorElem.querySelector('.ossz-cell');
+                if (osszCell) {
+                    const teljesOsszeg = osszegzesSzamolas(osszesitoSor, true);
+                    osszCell.textContent = teljesOsszeg > 0 ? teljesOsszeg.toString() : '';
+                }
+            }
+        }
+
+        function renderTabla() {
+            const tbody = document.getElementById('tablaTest');
+            const fejlec = document.getElementById('fejlecSor');
+            if (!tbody || !fejlec) return;
+
+            const napokSzama = getNapokSzama(aktualisEv, aktualisHo);
+            
+            if (Object.keys(oszlopSzinek).length !== napokSzama) {
+                oszlopSzinek = initOszlopSzinek();
+            }
+
+            fejlec.innerHTML = '<th>Név / Dátum</th>';
+            for (let d = 1; d <= napokSzama; d++) {
+                const th = document.createElement('th');
+                const napNeve = getHetNapja(aktualisEv, aktualisHo, d);
+                const rovidNap = ['V', 'H', 'K', 'Sze', 'Cs', 'P', 'Szo'][napNeve];
+                th.innerHTML = `${d}<span class="felirat">${rovidNap}</span>`;
+                th.dataset.nap = d;
+                
+                const szin = oszlopSzinek[d] || 'white';
+                const hetvege = (napNeve === 0 || napNeve === 6);
+                th.className = getFejlecClass(szin, hetvege);
+                
+                if (szerkesztesEngedelyezve) {
+                    th.style.cursor = 'pointer';
+                    th.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        oszlopKattintas(parseInt(this.dataset.nap, 10));
+                    });
+                } else {
+                    th.style.cursor = 'default';
+                }
+                fejlec.appendChild(th);
+            }
+
+            const osszTh = document.createElement('th');
+            osszTh.className = 'ossz-fejlec';
+            osszTh.textContent = 'Össz.';
+            fejlec.appendChild(osszTh);
+
+            if (sorok.length !== SOROK_SZAMA) {
+                sorok = letrehozSorokat();
+            } else {
+                const aktNapokSzama = getNapokSzama(aktualisEv, aktualisHo);
+                sorok.forEach(sor => {
+                    if (!sor.napok) sor.napok = {};
+                    for (let d = 1; d <= aktNapokSzama; d++) {
+                        if (sor.napok[d] === undefined) sor.napok[d] = '';
+                    }
+                });
+                if (sorok.length > DOLGOZOK_SZAMA) {
+                    sorok[DOLGOZOK_SZAMA].osszesito = true;
+                    sorok[DOLGOZOK_SZAMA].nev = 'ÖSSZESÍTŐ';
+                }
+            }
+
+            tbody.innerHTML = '';
+            sorok.forEach((sor, sorIndex) => {
+                const tr = document.createElement('tr');
+                tr.dataset.index = sorIndex;
+                const isOsszesito = sor.osszesito === true;
+                
+                if (isOsszesito) {
+                    tr.className = 'osszesito-sor';
+                }
+
+                const tdNev = document.createElement('td');
+                if (!isOsszesito) {
+                    tdNev.style.background = '#f8faff !important';
+                }
+                const divNev = document.createElement('div');
+                divNev.className = 'nev-cell';
+                
+                const sorszamSpan = document.createElement('span');
+                sorszamSpan.className = 'nev-sorszam';
+                if (isOsszesito) {
+                    sorszamSpan.textContent = '';
+                } else {
+                    sorszamSpan.textContent = (sorIndex + 1) + '.';
+                }
+                divNev.appendChild(sorszamSpan);
+                
+                const inpNev = document.createElement('input');
+                inpNev.type = 'text';
+                inpNev.className = 'nev-input';
+                inpNev.value = sor.nev || '';
+                inpNev.placeholder = isOsszesito ? '' : 'Név';
+                inpNev.dataset.sor = sorIndex;
+                inpNev.dataset.field = 'nev';
+                inpNev.addEventListener('input', function() {
+                    sorok[sorIndex].nev = this.value;
+                    mentes();
+                });
+                
+                if (isOsszesito || !szerkesztesEngedelyezve) {
+                    inpNev.classList.remove('engedelyezett');
+                } else {
+                    inpNev.classList.add('engedelyezett');
+                }
+                divNev.appendChild(inpNev);
+                tdNev.appendChild(divNev);
+                tr.appendChild(tdNev);
+
+                for (let d = 1; d <= napokSzama; d++) {
+                    const td = document.createElement('td');
+                    td.dataset.nap = d;
+                    
+                    if (!isOsszesito) {
+                        const szin = oszlopSzinek[d] || 'white';
+                        const napNeve = getHetNapja(aktualisEv, aktualisHo, d);
+                        const hetvege = (napNeve === 0 || napNeve === 6);
+                        
+                        if (szin !== 'white') {
+                            td.className = getSzinClass(szin);
+                        } else if (hetvege) {
+                            td.className = 'nap-hetvege';
+                        } else {
+                            td.className = 'nap-feher';
+                        }
+                    }
+                    
+                    const inp = document.createElement('input');
+                    inp.type = 'text';
+                    inp.value = sor.napok[d] || '';
+                    inp.placeholder = '';
+                    inp.dataset.sor = sorIndex;
+                    inp.dataset.nap = d;
+                    inp.addEventListener('input', function() {
+                        const sorIdx = parseInt(this.dataset.sor, 10);
+                        const nap = parseInt(this.dataset.nap, 10);
+                        sorok[sorIdx].napok[nap] = this.value;
+                        if (sorIdx < DOLGOZOK_SZAMA) {
+                            frissitOsszesitoSort();
+                        }
+                        frissitOsszegzes(sorIdx);
+                        mentes();
+                    });
+
+                    if (isOsszesito || !szerkesztesEngedelyezve) {
+                        inp.classList.remove('engedelyezett');
+                    } else {
+                        inp.classList.add('engedelyezett');
+                    }
+                    td.appendChild(inp);
+                    tr.appendChild(td);
+                }
+
+                const osszTd = document.createElement('td');
+                osszTd.className = 'ossz-cell';
+                const osszeg = osszegzesSzamolas(sor, true);
+                osszTd.textContent = osszeg > 0 ? osszeg.toString() : '';
+                osszTd.id = 'ossz-' + sorIndex;
+                if (isOsszesito) {
+                    osszTd.style.background = '#dce4ec';
+                    osszTd.style.color = '#1a3c5e';
+                    osszTd.style.fontWeight = '700';
+                    osszTd.style.fontSize = '18px';
+                } else {
+                    osszTd.style.background = '#eef3fa';
+                    osszTd.style.color = '#1a3c5e';
+                }
+                tr.appendChild(osszTd);
+
+                tbody.appendChild(tr);
+            });
+
+            frissitOsszesitoSort();
+
+            const honapInput = document.getElementById('honapValaszto');
+            if (honapInput) {
+                const hoStr = String(aktualisHo + 1).padStart(2, '0');
+                honapInput.value = `${aktualisEv}-${hoStr}`;
+            }
+            
+            frissitGombot();
+        }
+
+        function frissitOsszegzes(sorIndex) {
+            const cell = document.getElementById('ossz-' + sorIndex);
+            if (!cell) return;
+            const sor = sorok[sorIndex];
+            if (!sor) return;
+            const osszeg = osszegzesSzamolas(sor, true);
+            cell.textContent = osszeg > 0 ? osszeg.toString() : '';
+            const isOsszesito = sor.osszesito === true;
+            if (isOsszesito) {
+                cell.style.background = '#dce4ec';
+                cell.style.color = '#1a3c5e';
+                cell.style.fontWeight = '700';
+                cell.style.fontSize = '18px';
+            } else {
+                cell.style.background = '#eef3fa';
+                cell.style.color = '#1a3c5e';
+            }
+        }
+
+        function oszlopKattintas(nap) {
+            if (!nap || !szerkesztesEngedelyezve) return;
+            const aktSzin = oszlopSzinek[nap] || 'white';
+            const ujSzin = kovetkezoSzin(aktSzin);
+            oszlopSzinek[nap] = ujSzin;
+            
+            const th = document.querySelector(`#fejlecSor th[data-nap="${nap}"]`);
+            if (th) {
+                const napNeve = getHetNapja(aktualisEv, aktualisHo, nap);
+                const hetvege = (napNeve === 0 || napNeve === 6);
+                th.className = getFejlecClass(ujSzin, hetvege);
+            }
+            
+            const cellak = document.querySelectorAll(`#tablaTest tr:not(.osszesito-sor) td[data-nap="${nap}"]`);
+            cellak.forEach(td => {
+                const napNeve = getHetNapja(aktualisEv, aktualisHo, nap);
+                const hetvege = (napNeve === 0 || napNeve === 6);
+                
+                if (ujSzin !== 'white') {
+                    td.className = getSzinClass(ujSzin);
+                } else if (hetvege) {
+                    td.className = 'nap-hetvege';
+                } else {
+                    td.className = 'nap-feher';
+                }
+            });
+
+            mentes();
+        }
+
+        function valtoztatHonap(ev, ho) {
+            if (szerkesztesEngedelyezve) {
+                mentes();
+            }
+            
+            const sikerult = betoltes(ev, ho);
+            
+            if (!sikerult) {
+                aktualisEv = ev;
+                aktualisHo = ho;
+                sorok = letrehozSorokat();
+                oszlopSzinek = initOszlopSzinek();
+            } else {
+                const napokSzama = getNapokSzama(ev, ho);
+                if (sorok.length !== SOROK_SZAMA) {
+                    sorok = letrehozSorokat();
+                }
+                if (Object.keys(oszlopSzinek).length !== napokSzama) {
+                    oszlopSzinek = initOszlopSzinek();
+                }
+                sorok.forEach(sor => {
+                    if (!sor.napok) sor.napok = {};
+                    for (let d = 1; d <= napokSzama; d++) {
+                        if (sor.napok[d] === undefined) sor.napok[d] = '';
+                    }
+                });
+                if (sorok.length > DOLGOZOK_SZAMA) {
+                    sorok[DOLGOZOK_SZAMA].osszesito = true;
+                    sorok[DOLGOZOK_SZAMA].nev = 'ÖSSZESÍTŐ';
+                }
+            }
+            
+            renderTabla();
+            if (szerkesztesEngedelyezve) {
+                mentes();
+            }
+        }
+
+        function frissitGombot() {
+            const gomb = document.getElementById('editToggleBtn');
+            if (szerkesztesEngedelyezve) {
+                gomb.textContent = '🔒 Mentés és bezárás';
+                gomb.className = 'save-close';
+            } else {
+                gomb.textContent = '✏️ Szerkesztés';
+                gomb.className = 'edit';
+            }
+        }
+
+        // EXPORT
+        window.exportHonap = function() {
+            if (szerkesztesEngedelyezve) {
+                mentes();
+            }
+            
+            const honapKulcs = getHonapKulcs(aktualisEv, aktualisHo);
+            const fileName = `beosztas_${honapKulcs}.json`;
+            
+            const exportData = {
+                honap: honapKulcs,
+                ev: aktualisEv,
+                ho: aktualisHo,
+                sorok: sorok,
+                oszlopSzinek: oszlopSzinek,
+                exportDatum: new Date().toISOString()
+            };
+            
+            const jsonStr = JSON.stringify(exportData, null, 2);
+            const blob = new Blob([jsonStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert(`✅ A(z) ${honapKulcs} hónap adatai sikeresen exportálva!`);
+        };
+
+        // IMPORT - gomb kattintás - megnyitja a fájlválasztót
+        window.importGombKattintas = function() {
+            document.getElementById('fileInput').click();
+        };
+
+        // IMPORT - fájl kiválasztva
+        window.importFajlKivalasztva = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importData = JSON.parse(e.target.result);
+                    
+                    if (!importData.honap || !importData.sorok || !Array.isArray(importData.sorok)) {
+                        alert('❌ Érvénytelen fájl! Nem tartalmazza a szükséges adatokat.');
+                        return;
+                    }
+                    
+                    // Eltároljuk az adatokat
+                    importFajlData = importData;
+                    
+                    // Jelszó kérése
+                    varakozoMuvelet = 'import';
+                    document.getElementById('jelszoUzenet').innerText = 'Add meg a jelszót az importáláshoz';
+                    document.getElementById('passwordOverlay').classList.add('active');
+                    document.getElementById('jelszoInput').value = '';
+                    document.getElementById('errorMsg').classList.remove('show');
+                    document.getElementById('jelszoInput').focus();
+                    
+                } catch(err) {
+                    alert('❌ Hiba történt a fájl feldolgozása során: ' + err.message);
+                }
+            };
+            reader.readAsText(file);
+            
+            event.target.value = '';
+        };
+
+        // Import végrehajtása
+        function importVegrehajtas() {
+            if (!importFajlData) {
+                alert('❌ Nincs betöltött import fájl!');
+                return;
+            }
+            
+            const importData = importFajlData;
+            
+            if (!confirm(`📥 Biztosan importálod a(z) ${importData.honap} hónap adatait? A jelenlegi ${getHonapKulcs(aktualisEv, aktualisHo)} hónap adatai felülíródnak!`)) {
+                importFajlData = null;
+                return;
+            }
+            
+            if (szerkesztesEngedelyezve) {
+                szerkesztesEngedelyezve = false;
+            }
+            
+            aktualisEv = importData.ev || parseInt(importData.honap.split('-')[0]);
+            aktualisHo = importData.ho !== undefined ? importData.ho : (parseInt(importData.honap.split('-')[1]) - 1);
+            sorok = importData.sorok;
+            oszlopSzinek = importData.oszlopSzinek || initOszlopSzinek();
+            
+            const napokSzama = getNapokSzama(aktualisEv, aktualisHo);
+            if (Object.keys(oszlopSzinek).length !== napokSzama) {
+                oszlopSzinek = initOszlopSzinek();
+            }
+            
+            sorok.forEach(sor => {
+                if (!sor.napok) sor.napok = {};
+                for (let d = 1; d <= napokSzama; d++) {
+                    if (sor.napok[d] === undefined) sor.napok[d] = '';
+                }
+            });
+            
+            if (sorok.length > DOLGOZOK_SZAMA) {
+                sorok[DOLGOZOK_SZAMA].osszesito = true;
+                sorok[DOLGOZOK_SZAMA].nev = 'ÖSSZESÍTŐ';
+            }
+            
+            mentes();
+            renderTabla();
+            
+            alert(`✅ A(z) ${importData.honap} hónap adatai sikeresen importálva!`);
+            importFajlData = null;
+        }
+
+        // JELSZÓ KEZELÉS
+        window.jelszoModalBezar = function() {
+            document.getElementById('passwordOverlay').classList.remove('active');
+            document.getElementById('jelszoInput').value = '';
+            document.getElementById('errorMsg').classList.remove('show');
+            varakozoMuvelet = null;
+            // Csak akkor töröljük az import adatokat, ha nem import művelet közben vagyunk
+            if (varakozoMuvelet !== 'import') {
+                importFajlData = null;
+            }
+        };
+
+        window.jelszoEllenorzes = function() {
+            const jelszo = document.getElementById('jelszoInput').value;
+            
+            if (jelszo === JELSZO) {
+                document.getElementById('passwordOverlay').classList.remove('active');
+                document.getElementById('jelszoInput').value = '';
+                document.getElementById('errorMsg').classList.remove('show');
+                
+                if (varakozoMuvelet === 'szerkesztes') {
+                    szerkesztesEngedelyezve = true;
+                    renderTabla();
+                    mentes();
+                } else if (varakozoMuvelet === 'import') {
+                    importVegrehajtas();
+                }
+                varakozoMuvelet = null;
+            } else {
+                document.getElementById('errorMsg').classList.add('show');
+                document.getElementById('jelszoInput').value = '';
+                document.getElementById('jelszoInput').focus();
+            }
+        };
+
+        window.szerkesztesGombKattintas = function() {
+            if (szerkesztesEngedelyezve) {
+                mentes();
+                szerkesztesEngedelyezve = false;
+                renderTabla();
+            } else {
+                varakozoMuvelet = 'szerkesztes';
+                document.getElementById('jelszoUzenet').innerText = 'Add meg a jelszót a szerkesztés megkezdéséhez';
+                document.getElementById('passwordOverlay').classList.add('active');
+                document.getElementById('jelszoInput').value = '';
+                document.getElementById('errorMsg').classList.remove('show');
+                document.getElementById('jelszoInput').focus();
+            }
+        };
+
+        window.resetTabla = function() {
+            if (!szerkesztesEngedelyezve) {
+                alert('A műszakok törléséhez előbb szerkesztési módba kell lépned!');
+                return;
+            }
+            
+            if (!confirm('Biztosan törlöd az összes műszakot? A nevek és az összesítő sor megmarad!')) {
+                return;
+            }
+            
+            const napokSzama = getNapokSzama(aktualisEv, aktualisHo);
+            for (let i = 0; i < DOLGOZOK_SZAMA; i++) {
+                for (let d = 1; d <= napokSzama; d++) {
+                    sorok[i].napok[d] = '';
+                }
+            }
+            
+            for (let d = 1; d <= napokSzama; d++) {
+                oszlopSzinek[d] = 'white';
+            }
+            
+            renderTabla();
+            mentes();
+        };
+
+        document.getElementById('jelszoInput')?.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') jelszoEllenorzes();
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') jelszoModalBezar();
+        });
+        document.getElementById('passwordOverlay')?.addEventListener('click', function(e) {
+            if (e.target === this) jelszoModalBezar();
+        });
+
+        document.getElementById('honapValaszto')?.addEventListener('change', function() {
+            const [evStr, hoStr] = this.value.split('-');
+            const ev = parseInt(evStr, 10); 
+            const ho = parseInt(hoStr, 10) - 1;
+            if (!isNaN(ev) && !isNaN(ho) && ho >= 0 && ho <= 11) {
+                valtoztatHonap(ev, ho);
+            }
+        });
+
+        const kezdoEv = 2026;
+        const kezdoHo = 7;
+        const sikerult = betoltes(kezdoEv, kezdoHo);
+        
+        if (!sikerult) {
+            aktualisEv = kezdoEv;
+            aktualisHo = kezdoHo;
+            sorok = letrehozSorokat();
+            oszlopSzinek = initOszlopSzinek();
+        } else {
+            const napokSzama = getNapokSzama(aktualisEv, aktualisHo);
+            if (sorok.length !== SOROK_SZAMA) {
+                sorok = letrehozSorokat();
+            }
+            if (Object.keys(oszlopSzinek).length !== napokSzama) {
+                oszlopSzinek = initOszlopSzinek();
+            }
+            sorok.forEach(sor => {
+                if (!sor.napok) sor.napok = {};
+                for (let d = 1; d <= napokSzama; d++) {
+                    if (sor.napok[d] === undefined) sor.napok[d] = '';
+                }
+            });
+            if (sorok.length > DOLGOZOK_SZAMA) {
+                sorok[DOLGOZOK_SZAMA].osszesito = true;
+                sorok[DOLGOZOK_SZAMA].nev = 'ÖSSZESÍTŐ';
+            }
+        }
+        
+        renderTabla();
+        mentes();
+    })();
+</script>
+</body>
+</html>
