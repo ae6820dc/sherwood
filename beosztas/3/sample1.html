@@ -548,7 +548,7 @@
 .table-wrap td .marquee-shell { position:relative; width:100%; min-width:0; overflow:hidden; display:flex; align-items:center; }
 .table-wrap td .marquee-shell > input { position:relative; z-index:1; }
 .table-wrap td .marquee-shell.is-scrolling > input:not(:focus) { color:transparent !important; -webkit-text-fill-color:transparent; }
-.table-wrap td .marquee-track { display:none; position:absolute; left:0; top:50%; white-space:nowrap; width:max-content; pointer-events:none; color:#000; font:700 21px 'Segoe UI',Arial,sans-serif; transform:translateY(-50%); animation:beosztas-scroll var(--scroll-duration,8s) linear infinite; }
+.table-wrap td .marquee-track { display:none; position:absolute; left:0; top:50%; white-space:nowrap; width:max-content; pointer-events:none; color:#000; font:700 21px 'Segoe UI',Arial,sans-serif; transform:translateY(-50%); animation:beosztas-scroll var(--scroll-duration,8s) ease-in-out infinite alternate; }
 .table-wrap td .marquee-shell.is-scrolling:not(:focus-within) .marquee-track { display:block; }
 .table-wrap td .nev-cell .marquee-track { font-size:17px; text-align:left; }
 .table-wrap td .ossz-cell .marquee-track { color:#1a3c5e; }
@@ -774,7 +774,7 @@
             const track = shell.querySelector('.marquee-track');
             if (!track) return;
             const value = input.value || '';
-            track.textContent = value + '     ✦     ';
+            track.textContent = value;
             const width = shell.clientWidth;
             const ctx = frissitFenytabla.canvas || (frissitFenytabla.canvas = document.createElement('canvas'));
             const measure = ctx.getContext('2d');
@@ -786,10 +786,10 @@
             if (overflow) {
                 const trackStyle = getComputedStyle(track);
                 measure.font = trackStyle.fontWeight + ' ' + trackStyle.fontSize + ' ' + trackStyle.fontFamily;
-                const distance = measure.measureText(track.textContent).width;
+                const distance = Math.max(0, textWidth - width + 4);
                 track.style.setProperty('--scroll-distance', distance + 'px');
                 track.style.setProperty('--scroll-duration', Math.max(5,distance/25).toFixed(2) + 's');
-                track.textContent = value + '     ✦     ' + value + '     ✦     ';
+                track.textContent = value;
             }
         }
         function aktivalFenytabla() {
