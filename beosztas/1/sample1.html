@@ -1021,7 +1021,7 @@
             }
             
             const honapKulcs = getHonapKulcs(aktualisEv, aktualisHo);
-            const fileName = `beosztas_${honapKulcs}.json`;
+            const fileName = `Havi beosztás ${aktualisEv}, ${String(aktualisHo + 1).padStart(2, '0')}.json`;
             
             const exportData = {
                 honap: honapKulcs,
