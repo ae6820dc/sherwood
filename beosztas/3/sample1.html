@@ -555,6 +555,12 @@
 @keyframes beosztas-scroll { from { transform:translate(0,-50%); } to { transform:translate(calc(-1 * var(--scroll-distance)), -50%); } }
 @media(max-width:700px) { .table-wrap td .marquee-track { font-size:18px; } .table-wrap td .nev-cell .marquee-track { font-size:14px; } }
 @media(prefers-reduced-motion:reduce) { .table-wrap td .marquee-track { animation-duration:25s; } }
+
+/* Össz. oszlop: az automatikusan számított értékek is oda-vissza gördülnek. */
+.table-wrap td.ossz-cell .ossz-marquee { display:block; width:100%; overflow:hidden; white-space:nowrap; position:relative; }
+.table-wrap td.ossz-cell .ossz-marquee-text { display:inline-block; white-space:nowrap; }
+.table-wrap td.ossz-cell .ossz-marquee.is-scrolling .ossz-marquee-text { animation:ossz-scroll var(--ossz-duration,6s) ease-in-out infinite alternate; }
+@keyframes ossz-scroll { from { transform:translateX(0); } to { transform:translateX(calc(-1 * var(--ossz-distance))); } }
 </style>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%231a3c5e'/%3E%3Cpath d='M18 16h22a4 4 0 0 1 4 4v24a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4V20a4 4 0 0 1 4-4z' fill='%23ffffff'/%3E%3Cpath d='M20 24h20M20 32h20M20 40h12' stroke='%231a3c5e' stroke-width='3.5' stroke-linecap='round'/%3E%3Cpath d='M40 14l6 6-6 6' fill='none' stroke='%23c44536' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 </head>
@@ -766,6 +772,33 @@
             }
         }
 
+
+
+        function frissitOsszFenytabla() {
+            document.querySelectorAll('#tablaTest td.ossz-cell').forEach(cell => {
+                let shell = cell.querySelector('.ossz-marquee');
+                if (!shell) {
+                    const value = cell.textContent;
+                    cell.textContent = '';
+                    shell = document.createElement('span');
+                    shell.className = 'ossz-marquee';
+                    const track = document.createElement('span');
+                    track.className = 'ossz-marquee-text';
+                    track.textContent = value;
+                    shell.appendChild(track);
+                    cell.appendChild(shell);
+                }
+                const track = shell.querySelector('.ossz-marquee-text');
+                const width = shell.clientWidth;
+                const extra = Math.max(0, track.scrollWidth - width + 2);
+                shell.classList.toggle('is-scrolling',extra > 0);
+                shell.style.setProperty('--ossz-distance',extra+'px');
+                shell.style.setProperty('--ossz-duration',Math.max(4,extra/12).toFixed(2)+'s');
+            });
+        }
+        // A számítások frissítésekor is újraépül a mozgó megjelenítés.
+        new MutationObserver(()=>requestAnimationFrame(frissitOsszFenytabla)).observe(document.getElementById('tablaTest'),{childList:true,subtree:true,characterData:true});
+        window.addEventListener('resize',frissitOsszFenytabla);
 
         // A szerkeszthető input megmarad; csak a túl hosszú érték kap mozgó feliratot.
         function frissitFenytabla(input) {
